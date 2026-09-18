@@ -162,7 +162,7 @@ Not yet:
 
 The same application, written seven times — in Soli, Ruby, Python, PHP,
 JavaScript, Go and Rust, node for node. At 500 rows, one number changed:
-**9 bytes** out of every one of them, between 2.5 and 37 ms, and a memory
+**9 bytes** out of every one of them, between 2.4 and 26 ms, and a memory
 column that ranks what else is in the process rather than the language.
 [`bench/README.md`](https://github.com/solisoft/eui-ruby/blob/main/bench/README.md)
 has the tables, the method and the caveats; the applications and the one
