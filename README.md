@@ -158,15 +158,15 @@ Not yet:
   session and a fresh `Mount`, which is a conforming answer and a worse one.
 - The windowed `list`'s `window` event, and `scene` uniforms.
 
-## Against the other four
+## Against the other six
 
-The same application, written five times — in Soli, Ruby, Python, PHP and
-JavaScript, node for node. At 500 rows, one number changed: **9 bytes** out of
-every one of them, between 9 and 28 ms, and a memory column that ranks what
-else is in the process rather than the language.
+The same application, written seven times — in Soli, Ruby, Python, PHP,
+JavaScript, Go and Rust, node for node. At 500 rows, one number changed:
+**9 bytes** out of every one of them, between 2.5 and 37 ms, and a memory
+column that ranks what else is in the process rather than the language.
 [`bench/README.md`](https://github.com/solisoft/eui-ruby/blob/main/bench/README.md)
 has the tables, the method and the caveats; the applications and the one
-driver that measures all five live in `clients/eui-ruby/bench` of the
+driver that measures all seven live in `clients/eui-ruby/bench` of the
 [EUI repository](https://github.com/solisoft/eui).
 
 ## Tests
