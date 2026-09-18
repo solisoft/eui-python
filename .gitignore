@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+.venv/
+dist/
+build/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+# A publisher key: whoever holds it can publish as this application.
+*.pem
+config/eui_publisher.*

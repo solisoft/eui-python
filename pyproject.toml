@@ -1,0 +1,34 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "eui-python"
+version = "0.1.0"
+description = "EUI applications in Python: the wire format, the views, and the server that speaks them."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Olivier Bonnaure", email = "olivier@solisoft.net" }]
+keywords = ["eui", "protocol", "ui", "websocket", "binary"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: User Interfaces",
+]
+# None. Everything here is the standard library: sockets, hashlib for the
+# publisher key's SHA-512, and a BLAKE3 and an Ed25519 of its own, because
+# an asset is named by the hash of its content and a manifest is signed.
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/solisoft/eui-python"
+Source = "https://github.com/solisoft/eui-python"
+Documentation = "https://eui.solisoft.net/components"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/eui"]
