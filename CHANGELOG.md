@@ -19,7 +19,11 @@ reference client draw it.
   the state.
 - `eui.blake3` and `eui.ed25519` — both in Python, because an asset is named
   by the hash of its content and a manifest is signed, and the standard
-  library has neither. Checked against the official vectors.
+  library has neither. Checked against the official vectors, and the Ed25519
+  against OpenSSL's own signatures.
+- The publisher key is a PKCS#8 PEM, which the Ruby, PHP and Node libraries
+  read too: an application that changes language keeps its identity, and
+  nobody's pin breaks.
 
 Not yet: local handlers (`spec/07` bytecode), file transfers (`spec/01` §6),
 session resume, and the windowed `list`'s `window` event.

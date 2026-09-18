@@ -85,6 +85,22 @@ class Ed25519Test(unittest.TestCase):
         self.assertFalse(ed25519.verify(public, b"EUI manifesto", signature))
         self.assertFalse(ed25519.verify(public, b"EUI manifest", bytes(64)))
 
+    def test_the_key_file_is_the_pem_every_implementation_reads(self):
+        """A PKCS#8 PEM, so an application that changes language keeps its
+        identity and nobody's pin breaks."""
+        from eui.manifest import publisher_key, secret_from_pem, secret_to_pem
+
+        secret = ed25519.generate_secret()
+        pem = secret_to_pem(secret)
+        self.assertTrue(pem.startswith("-----BEGIN PRIVATE KEY-----"))
+        self.assertEqual(secret, secret_from_pem(pem))
+
+        with tempfile.TemporaryDirectory() as directory:
+            path = os.path.join(directory, "written-elsewhere.pem")
+            with open(path, "w") as handle:
+                handle.write(pem)
+            self.assertEqual(secret, publisher_key(path))
+
     def test_a_key_is_32_bytes_and_a_signature_64(self):
         secret = ed25519.generate_secret()
         self.assertEqual(32, len(secret))

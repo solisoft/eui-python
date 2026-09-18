@@ -10,6 +10,7 @@ deployment — keep the file, and keep it out of the repository.
 
 from __future__ import annotations
 
+import base64
 import os
 
 from . import ed25519
@@ -34,24 +35,54 @@ KEY_ROTATION = 9
 KEY_SIGNATURE = 10
 
 
+#: The whole of a PKCS#8 Ed25519 private key that is not the seed: a
+#: version, the algorithm identifier, and the two lengths around the key.
+#: Fixed, because the key is fixed — which is what makes reading one back
+#: a slice rather than an ASN.1 parser.
+_PKCS8_PREFIX = bytes.fromhex("302e020100300506032b657004220420")
+
+
+def secret_to_pem(secret: bytes) -> str:
+    """The seed as the PKCS#8 PEM every one of these libraries reads."""
+    der = base64.b64encode(_PKCS8_PREFIX + secret).decode("ascii")
+    body = "\n".join(der[i : i + 64] for i in range(0, len(der), 64))
+    return f"-----BEGIN PRIVATE KEY-----\n{body}\n-----END PRIVATE KEY-----\n"
+
+
+def secret_from_pem(text: str) -> bytes:
+    """The seed out of one. Ed25519 is the only key this reads, so the
+    prefix is checked rather than parsed."""
+    body = "".join(line for line in text.splitlines() if not line.startswith("-----"))
+    der = base64.b64decode(body)
+    if len(der) != len(_PKCS8_PREFIX) + 32 or not der.startswith(_PKCS8_PREFIX):
+        raise EUIError("that PEM is not a PKCS#8 Ed25519 private key")
+    return der[-32:]
+
+
 def publisher_key(path: str) -> bytes:
-    """An Ed25519 secret kept on disk, generated on first use. Never
-    committed: whoever holds it can publish as this application."""
+    """An Ed25519 secret kept on disk as PKCS#8 PEM — the same file the Ruby,
+    PHP and Node libraries read, so an application that changes language
+    keeps its identity and nobody's pin breaks. Generated on first use, and
+    never committed: whoever holds it can publish as this application."""
     if os.path.exists(path):
         with open(path, "rb") as handle:
-            raw = handle.read().strip()
-        if len(raw) == 64:  # written as hex by an older run, or by hand
+            raw = handle.read()
+        if b"PRIVATE KEY" in raw:
+            return secret_from_pem(raw.decode("ascii"))
+        raw = raw.strip()
+        if len(raw) == 64:  # hex, written by hand
             return bytes.fromhex(raw.decode("ascii"))
-        if len(raw) != 32:
-            raise EUIError(f"{path} is not a 32-byte Ed25519 secret")
-        return raw
+        if len(raw) == 32:  # the raw seed an earlier version of this wrote
+            return raw
+        raise EUIError(f"{path} is not an Ed25519 secret this library can read")
+
     secret = ed25519.generate_secret()
     directory = os.path.dirname(path)
     if directory:
         os.makedirs(directory, exist_ok=True)
     handle = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
-    with os.fdopen(handle, "wb") as out:
-        out.write(secret)
+    with os.fdopen(handle, "w") as out:
+        out.write(secret_to_pem(secret))
     return secret
 
 

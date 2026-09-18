@@ -134,9 +134,10 @@ app.font("Space Grotesk", ["public/fonts/space-grotesk-400.ttf",
                            "public/fonts/space-grotesk-700.ttf"])
 ```
 
-The publisher key is generated on first use and kept: a client pins it
-against `app_id` on first run and refuses a different one later. It belongs
-to the application, not to a deployment, and never in a repository.
+The publisher key is a PKCS#8 PEM — the same file the Ruby, PHP and Node
+libraries read, so an application that changes language keeps its identity
+and nobody's pin breaks. It is generated on first use and kept: a client pins
+it against `app_id` on first run and refuses a different one later.
 
 ## What is here, and what is not
 
@@ -163,7 +164,7 @@ Not yet:
 python3 -m unittest discover -s tests -t tests
 ```
 
-102 of them, and the ones worth reading are `tests/test_proto.py` — the
+103 of them, and the ones worth reading are `tests/test_proto.py` — the
 spec's own §8 example, 150 bytes, byte for byte — `tests/test_apply.py`,
 which is a client in forty lines that applies the server's ops and compares
 the tree it ends up holding with the server's own, over every permutation of
